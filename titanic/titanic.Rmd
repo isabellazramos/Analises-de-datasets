@@ -1,0 +1,128 @@
+---
+title: "Analisando o dataset 'Titanic'"
+author: "Isabella Menezes Ramos"
+date: "06/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE}
+library(gcookbook)
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+```
+
+
+## Intro
+
+Saber em qual diretório eu me encontro e definindo pasta
+
+```{r}
+getwd()
+setwd("/home/isabella/R_Titanic")
+```
+
+## Sabendo mais sobre o dataset
+
+Analisar valores que a variavel pode assumir
+```{r}
+train <- read.table("/home/isabella/R_Titanic/train.csv", header=TRUE, 
+   sep=",")
+```
+
+```{r}
+colnames(train)
+```
+
+
+```{r}
+head(train)
+```
+
+```{r}
+str(train)
+```
+
+## Analisando separadamente as variaveis
+### Sobreviventes
+```{r}
+table(train$Survived)
+```
+342 pessoas sobreviveram e 549 morreram
+```{r}
+barplot(table(train$Survived))
+```
+Estatística descritiva de sobreviventes e não sobreviventes
+```{r}
+by(train$Age,train$Survived,summary)
+```
+Analisando idade com o sexo
+```{r}
+table(train$Age,train$Sex == 'female')
+```
+
+
+```{r}
+table(train$Age,train$Sex == 'male')
+```
+
+```{r}
+table(train$Pclass)
+```
+
+Relacionando a idade, sobrevivência, sexo e a classe em uma variável separada
+```{r}
+Age_Survived_Sex = train[c("Age","Survived","Sex","Pclass")]
+```
+
+
+#### Trabalhando apenas com sobreviventes
+```{r}
+Survived_Table = subset(Age_Survived_Sex,Survived == 1)
+summary(Survived_Table)
+```
+233  mulheres e 109 homens
+
+```{r}
+Survived_Table_male = subset(Survived_Table,Sex =='male')
+Survived_Table_female = subset(Survived_Table, Sex == 'female')
+```
+Separando por sexos
+
+Quantos sobreviventes por classe e gênero
+```{r}
+qplot(x = Pclass,y = Age,data= Survived_Table_male)
+table(Survived_Table_male$Pclass)
+qplot(x = Pclass, y = Age, data = Survived_Table_female)
+table(Survived_Table_female$Pclass)
+```
+
+Estatística descritiva por classe
+```{r}
+by(Survived_Table_female$Age,Survived_Table_female$Pclass,summary)
+by(Survived_Table_male$Age,Survived_Table_male$Pclass,summary)
+```
+
+### Não sobreviventes
+```{r}
+NoSurvived_Table = subset(Age_Survived_Sex,Survived == 0)
+summary(NoSurvived_Table)
+```
+81  mulheres e 468 homens
+
+```{r}
+NoSurvived_Table_male = subset(NoSurvived_Table,Sex =='male')
+NoSurvived_Table_female = subset(NoSurvived_Table, Sex == 'female')
+```
+
+```{r}
+qplot(x = Pclass,y = Age,data= NoSurvived_Table_male)
+table(NoSurvived_Table_male$Pclass)
+qplot(x = Pclass, y = Age, data = NoSurvived_Table_female)
+table(NoSurvived_Table_female$Pclass)
+```
+
